@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Soccer Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #1e3c72;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 1em;
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .score-box {
+            text-align: center;
+            background: #f0f0f0;
+            padding: 15px 25px;
+            border-radius: 8px;
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .score-box h3 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+        }
+        
+        .score {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2a5298;
+        }
+        
+        #gameCanvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            background: linear-gradient(to bottom, #87CEEB 0%, #90EE90 100%);
+            border: 3px solid #333;
+            border-radius: 8px;
+            margin: 20px 0;
+            cursor: none;
+        }
+        
+        .controls {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .controls h3 {
+            color: #1e3c72;
+            margin-bottom: 15px;
+        }
+        
+        .control-item {
+            margin: 10px 0;
+            color: #333;
+            font-size: 1em;
+        }
+        
+        .control-item strong {
+            color: #2a5298;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 12px 30px;
+            font-size: 1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        #startBtn {
+            background: #28a745;
+            color: white;
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        #startBtn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(40, 167, 69, 0.4);
+        }
+        
+        #resetBtn {
+            background: #ffc107;
+            color: black;
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        #resetBtn:hover {
+            background: #e0a800;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 193, 7, 0.4);
+        }
+        
+        .fullscreen-btn {
+            background: #007bff;
+            color: white;
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .fullscreen-btn:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 123, 255, 0.4);
+        }
+        
+        .status {
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #d9534f;
+            margin-top: 20px;
+            min-height: 30px;
+            padding: 15px;
+            background: #f2dede;
+            border-radius: 8px;
+            border-left: 4px solid #d9534f;
+        }
+        
+        .instructions {
+            background: #e7f3ff;
+            border-left: 4px solid #2a5298;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .instructions h4 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+        }
+        
+        .instructions p {
+            margin: 8px 0;
+            font-size: 0.95em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚽ Mini Soccer Game</h1>
+        <p class="subtitle">Move your paddle and score goals against the AI!</p>
+        
+        <div class="instructions">
+            <h4>🎮 How to Play:</h4>
+            <p>• <strong>Move Paddle:</strong> Move your mouse up and down to control your paddle</p>
+            <p>• <strong>Score Goals:</strong> Hit the ball with your paddle to score on the AI</p>
+            <p>• <strong>Defend:</strong> Block the AI's shots from reaching your goal</p>
+            <p>• <strong>Win:</strong> First to 5 goals wins!</p>
+        </div>
+        
+        <div class="game-info">
+            <div class="score-box">
+                <h3>🔵 You</h3>
+                <div class="score" id="playerScore">0</div>
+            </div>
+            <div class="score-box">
+                <h3>🔴 AI</h3>
+                <div class="score" id="aiScore">0</div>
+            </div>
+        </div>
+        
+        <canvas id="gameCanvas" width="800" height="400"></canvas>
+        
+        <div class="controls">
+            <h3>⌨️ Controls</h3>
+            <div class="control-item">Move your <strong>mouse</strong> to control your paddle</div>
+            <div class="control-item">The ball bounces off paddles and walls</div>
+            <div class="control-item">Reach 5 goals to win the game!</div>
+        </div>
+        
+        <div class="buttons">
+            <button id="startBtn" onclick="game.start()">▶️ Start Game</button>
+            <button id="resetBtn" onclick="game.reset()">🔄 Reset Score</button>
+            <button class="fullscreen-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+        </div>
+        
+        <div class="status" id="status">Click "Start Game" to begin!</div>
+    </div>
+    
+    <script src="game.js"></script>
+</body>
+</html>
